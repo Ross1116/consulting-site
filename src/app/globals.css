@@ -120,3 +120,11 @@
     @apply bg-background text-foreground;
   }
 }
+
+@keyframes pulsefast {
+  0%, 100% { transform: translateX(-100%); }
+  50% { transform: translateX(500%); }
+}
+.animate-pulse-fast {
+  animation: pulsefast 2s ease-in-out infinite;
+}

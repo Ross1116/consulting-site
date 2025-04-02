@@ -1,9 +1,9 @@
 import { cn } from "@/lib/utils";
 import Image from "next/image";
-import purple from "@/../public/purple-dots.jpg";
-import portrait from "@/../public/portrait.jpg";
-import crane from "@/../public/crane.jpg";
-import plan from "@/../public/planning.jpg";
+import purple from "../../public/purple-dots.jpg";
+import portrait from "../../public/portrait.jpg";
+import crane from "../../public/crane.jpg";
+import plan from "../../public/planning.jpg";
 
 const serviceData = [
   {

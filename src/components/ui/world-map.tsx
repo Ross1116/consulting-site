@@ -1,11 +1,7 @@
 "use client";
-
-import { useRef } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
 import { motion } from "motion/react";
-import DottedMap from "dotted-map";
 import Image from "next/image";
-import { useTheme } from "next-themes";
-
 interface MapProps {
   dots?: Array<{
     start: { lat: number; lng: number; label?: string };
@@ -13,80 +9,150 @@ interface MapProps {
   }>;
   lineColor?: string;
 }
-
-export default function WorldMap({
+function projectPoint(lat: number, lng: number) {
+  const x = (lng + 180) * (800 / 360);
+  const y = (90 - lat) * (400 / 180);
+  return { x, y };
+}
+function createCurvedPath(
+  start: { x: number; y: number },
+  end: { x: number; y: number }
+) {
+  const midX = (start.x + end.x) / 2;
+  const midY = Math.min(start.y, end.y) - 50;
+  return `M ${start.x} ${start.y} Q ${midX} ${midY} ${end.x} ${end.y}`;
+}
+const PLACEHOLDER_SVG = `<svg width="800" height="400" xmlns="http://www.w3.org/2000/svg">
+  <rect width="100%" height="100%" fill="rgba(30, 30, 30, 0.2)"/>
+</svg>`;
+export function WorldMap({
   dots = [],
-  lineColor = "#0ea5e9",
+  lineColor = "var(--chart-4)",
 }: MapProps) {
   const svgRef = useRef<SVGSVGElement>(null);
-  const map = new DottedMap({ height: 100, grid: "diagonal" });
-
-  const { theme } = useTheme();
-
-  const svgMap = map.getSVG({
-    radius: 0.22,
-    color: theme === "dark" ? "#FFFFFF40" : "#00000040",
-    shape: "circle",
-    backgroundColor: theme === "dark" ? "black" : "white",
-  });
-
-  const projectPoint = (lat: number, lng: number) => {
-    const x = (lng + 180) * (800 / 360);
-    const y = (90 - lat) * (400 / 180);
-    return { x, y };
-  };
-
-  const createCurvedPath = (
-    start: { x: number; y: number },
-    end: { x: number; y: number }
-  ) => {
-    const midX = (start.x + end.x) / 2;
-    const midY = Math.min(start.y, end.y) - 50;
-    return `M ${start.x} ${start.y} Q ${midX} ${midY} ${end.x} ${end.y}`;
-  };
-
+  const [svgMap, setSvgMap] = useState<string>(PLACEHOLDER_SVG);
+  const [mapLoaded, setMapLoaded] = useState(false);
+  const [showPlaceholder, setShowPlaceholder] = useState(true);
+  const pathData = useMemo(() => {
+    return dots.map((dot) => {
+      const startPoint = projectPoint(dot.start.lat, dot.start.lng);
+      const endPoint = projectPoint(dot.end.lat, dot.end.lng);
+      return {
+        path: createCurvedPath(startPoint, endPoint),
+        startCoords: {
+          cx: startPoint.x,
+          cy: startPoint.y,
+        },
+        endCoords: {
+          cx: endPoint.x,
+          cy: endPoint.y,
+        },
+      };
+    });
+  }, [dots]);
+  useEffect(() => {
+    let isMounted = true;
+    let timeoutId: number;
+    const loadMapInBackground = async () => {
+      try {
+        const DottedMapModule = await import("dotted-map");
+        const DottedMap = DottedMapModule.default;
+        const createMap = () => {
+          if (!isMounted) return;
+          try {
+            const map = new DottedMap({ height: 100, grid: "diagonal" });
+            const svg = map.getSVG({
+              radius: 0.22,
+              color: "#DEDEDE59",
+              shape: "circle",
+              backgroundColor: "var(--background)",
+            });
+            setSvgMap(svg);
+            setMapLoaded(true);
+            setTimeout(() => {
+              if (isMounted) {
+                setShowPlaceholder(false);
+              }
+            }, 100);
+          } catch (err) {
+            console.error("Error generating map:", err);
+          }
+        };
+        if (window.requestIdleCallback) {
+          window.requestIdleCallback(createMap);
+        } else {
+          timeoutId = window.setTimeout(createMap, 100);
+        }
+      } catch (err) {
+        console.error("Error loading DottedMap:", err);
+      }
+    };
+    setTimeout(loadMapInBackground, 100);
+    return () => {
+      isMounted = false;
+      if (timeoutId) clearTimeout(timeoutId);
+    };
+  }, []);
   return (
-    <div className="w-full aspect-[2/1] dark:bg-black bg-white rounded-lg  relative font-sans">
-      <Image
-        src={`data:image/svg+xml;utf8,${encodeURIComponent(svgMap)}`}
-        className="h-full w-full [mask-image:linear-gradient(to_bottom,transparent,white_10%,white_90%,transparent)] pointer-events-none select-none"
-        alt="world map"
-        height="495"
-        width="1056"
-        draggable={false}
-      />
+    <div className="w-full aspect-[5/2] rounded-lg relative font-sans">
+      {showPlaceholder && (
+        <div
+          className={`absolute inset-0 z-10 transition-opacity duration-1000 ${
+            mapLoaded ? "opacity-0" : "opacity-100"
+          }`}
+        >
+          <Image
+            src={`data:image/svg+xml;utf8,${encodeURIComponent(
+              PLACEHOLDER_SVG
+            )}`}
+            className="h-full w-full pointer-events-none select-none"
+            alt="loading map"
+            height={400}
+            width={800}
+            priority={true}
+            draggable={false}
+          />
+        </div>
+      )}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: mapLoaded ? 1 : 0 }}
+        transition={{ duration: 1.0 }}
+        className="absolute inset-0"
+      >
+        <Image
+          src={`data:image/svg+xml;utf8,${encodeURIComponent(svgMap)}`}
+          className="h-full w-full [mask-image:linear-gradient(to_bottom,transparent,white_10%,white_90%,transparent)] pointer-events-none select-none"
+          alt="world map"
+          height={400}
+          width={800}
+          priority={true}
+          draggable={false}
+        />
+      </motion.div>
       <svg
         ref={svgRef}
         viewBox="0 0 800 400"
         className="w-full h-full absolute inset-0 pointer-events-none select-none"
       >
-        {dots.map((dot, i) => {
-          const startPoint = projectPoint(dot.start.lat, dot.start.lng);
-          const endPoint = projectPoint(dot.end.lat, dot.end.lng);
-          return (
-            <g key={`path-group-${i}`}>
-              <motion.path
-                d={createCurvedPath(startPoint, endPoint)}
-                fill="none"
-                stroke="url(#path-gradient)"
-                strokeWidth="1"
-                initial={{
-                  pathLength: 0,
-                }}
-                animate={{
-                  pathLength: 1,
-                }}
-                transition={{
-                  duration: 1,
-                  delay: 0.5 * i,
-                  ease: "easeOut",
-                }}
-                key={`start-upper-${i}`}
-              ></motion.path>
-            </g>
-          );
-        })}
-
+        {pathData.map((data, i) => (
+          <g key={`path-group-${i}`}>
+            <motion.path
+              d={data.path}
+              fill="none"
+              stroke="url(#path-gradient)"
+              strokeWidth="1"
+              initial={{ pathLength: 0 }}
+              animate={{ pathLength: 1 }}
+              transition={{
+                duration: 1,
+                delay: 0.5 * i,
+                ease: "easeOut",
+              }}
+              key={`start-upper-${i}`}
+            ></motion.path>
+          </g>
+        ))}
         <defs>
           <linearGradient id="path-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
             <stop offset="0%" stopColor="white" stopOpacity="0" />
@@ -95,19 +161,18 @@ export default function WorldMap({
             <stop offset="100%" stopColor="white" stopOpacity="0" />
           </linearGradient>
         </defs>
-
-        {dots.map((dot, i) => (
+        {pathData.map((data, i) => (
           <g key={`points-group-${i}`}>
             <g key={`start-${i}`}>
               <circle
-                cx={projectPoint(dot.start.lat, dot.start.lng).x}
-                cy={projectPoint(dot.start.lat, dot.start.lng).y}
+                cx={data.startCoords.cx}
+                cy={data.startCoords.cy}
                 r="2"
                 fill={lineColor}
               />
               <circle
-                cx={projectPoint(dot.start.lat, dot.start.lng).x}
-                cy={projectPoint(dot.start.lat, dot.start.lng).y}
+                cx={data.startCoords.cx}
+                cy={data.startCoords.cy}
                 r="2"
                 fill={lineColor}
                 opacity="0.5"
@@ -132,14 +197,14 @@ export default function WorldMap({
             </g>
             <g key={`end-${i}`}>
               <circle
-                cx={projectPoint(dot.end.lat, dot.end.lng).x}
-                cy={projectPoint(dot.end.lat, dot.end.lng).y}
+                cx={data.endCoords.cx}
+                cy={data.endCoords.cy}
                 r="2"
                 fill={lineColor}
               />
               <circle
-                cx={projectPoint(dot.end.lat, dot.end.lng).x}
-                cy={projectPoint(dot.end.lat, dot.end.lng).y}
+                cx={data.endCoords.cx}
+                cy={data.endCoords.cy}
                 r="2"
                 fill={lineColor}
                 opacity="0.5"
