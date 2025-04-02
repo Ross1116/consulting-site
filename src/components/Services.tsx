@@ -1,60 +1,74 @@
-import { Cloud, Database, Lock, Code, BarChart, Laptop } from "lucide-react";
 import { cn } from "@/lib/utils";
+import Image from "next/image";
+import purple from "@/../public/purple-dots.jpg";
+import portrait from "@/../public/portrait.jpg";
+import crane from "@/../public/crane.jpg";
+import plan from "@/../public/planning.jpg";
 
 const serviceData = [
   {
     id: 1,
-    title: "Cloud Solutions",
-    icon: Cloud,
+    title: "Structural Engineering",
     description:
-      "Transform your business with secure, scalable cloud infrastructure and migration services.",
-    subtitle: "Secure & Scalable Infrastructure",
-    imageBg: "bg-gradient-to-br from-theme-purple/30 to-theme-blue/30",
+      "Expert analysis and design of structures that meet safety, functionality, and aesthetic requirements. Our engineers deliver innovative solutions for buildings, bridges, and infrastructure that stand the test of time while optimizing materials and construction costs.",
+    subtitle: "Innovative & Resilient Structures",
+    imageBg: crane,
   },
   {
     id: 2,
-    title: "Data & Analytics",
-    icon: Database,
+    title: "Transportation Planning",
     description:
-      "Unlock the power of your data with advanced analytics and business intelligence solutions.",
-    subtitle: "Actionable Business Insights",
-    imageBg: "bg-gradient-to-br from-theme-blue/30 to-theme-purple/30",
+      "Comprehensive transportation solutions that enhance mobility, accessibility, and safety while minimizing environmental impact. We develop strategic plans that integrate all modes of transportation to create efficient systems that serve communities and businesses alike.",
+    subtitle: "Sustainable Mobility Solutions",
+    imageBg: plan,
   },
   {
     id: 3,
-    title: "Cybersecurity",
-    icon: Lock,
+    title: "Environmental Consulting",
     description:
-      "Protect your digital assets with our comprehensive security services and solutions.",
-    subtitle: "Advanced Threat Protection",
-    imageBg: "bg-gradient-to-br from-theme-blue/30 to-theme-purple/30",
+      "Environmental assessments, permitting, and compliance services that balance development needs with ecological preservation. Our specialists conduct thorough impact studies and develop mitigation strategies to ensure projects meet regulatory requirements while protecting natural resources.",
+    subtitle: "Responsible Development Practices",
+    imageBg: purple,
   },
   {
     id: 4,
-    title: "Application Development",
-    icon: Code,
+    title: "Urban Planning & Design",
     description:
-      "Custom software solutions built with cutting-edge technologies to meet your business needs.",
-    subtitle: "Custom Software Solutions",
-    imageBg: "bg-gradient-to-br from-theme-blue/30 to-theme-purple/30",
+      "Thoughtful urban planning that creates vibrant, sustainable communities. We collaborate with stakeholders to develop master plans that address current needs while anticipating future growth, emphasizing livability, connectivity, and economic vitality.",
+    subtitle: "Creating Livable Communities",
+    imageBg: portrait,
   },
   {
     id: 5,
-    title: "Business Consulting",
-    icon: BarChart,
+    title: "Construction Management",
     description:
-      "Strategic advice and implementation support to drive business transformation and growth.",
-    subtitle: "Strategic Business Growth",
-    imageBg: "bg-gradient-to-br from-theme-purple/30 to-theme-blue/30",
+      "Comprehensive oversight of construction projects from inception to completion. Our project managers ensure quality control, schedule adherence, and budget management while facilitating communication between all parties to deliver successful outcomes for even the most complex projects.",
+    subtitle: "Seamless Project Delivery",
+    imageBg: "bg-gradient-to-br from-[#A100FF]/20 to-blue-400/20",
   },
   {
     id: 6,
-    title: "Digital Transformation",
-    icon: Laptop,
+    title: "Infrastructure Assessment",
     description:
-      "End-to-end digital transformation strategies to revolutionize your business processes.",
-    subtitle: "Business Process Revolution",
-    imageBg: "bg-gradient-to-br from-theme-blue/30 to-theme-purple/30",
+      "Detailed evaluation and rehabilitation recommendations for existing infrastructure. Our engineers utilize advanced technologies to identify structural issues, assess remaining service life, and develop cost-effective maintenance and upgrade strategies for bridges, roads, and facilities.",
+    subtitle: "Extending Asset Lifecycles",
+    imageBg: "bg-gradient-to-br from-[#A100FF]/20 to-blue-400/20",
+  },
+  {
+    id: 7,
+    title: "Geotechnical Engineering",
+    description:
+      "Specialized soil and foundation engineering to ensure structural stability and safety. Our geotechnical experts conduct comprehensive site investigations, soil testing, and analysis to develop appropriate foundation designs and earthwork recommendations for all terrain conditions.",
+    subtitle: "Ground-Up Stability Solutions",
+    imageBg: "bg-gradient-to-br from-[#A100FF]/20 to-blue-400/20",
+  },
+  {
+    id: 8,
+    title: "Surveying & Mapping",
+    description:
+      "Precise land surveying and mapping services utilizing state-of-the-art technology. Our surveying team provides accurate boundary determinations, topographic mapping, and construction staking to establish the critical foundations for successful project planning and execution.",
+    subtitle: "Precision Measurement & Mapping",
+    imageBg: "bg-gradient-to-br from-[#A100FF]/20 to-blue-400/20",
   },
 ];
 
@@ -62,53 +76,68 @@ const Services = () => {
   return (
     <section id="services" className="py-24 bg-theme-dark">
       <div className="container mx-auto px-6 md:px-12">
-        <h2 className="text-center text-white mb-4">Our Projects</h2>
+        <h2 className="text-center text-white mb-4 text-4xl font-bold">
+          Our Services
+        </h2>
         <p className="text-center text-gray-300 max-w-2xl mx-auto mb-16">
-          Comprehensive solutions designed to transform your business and drive
-          innovation.
+          Comprehensive civil engineering solutions designed to build sustainable infrastructure and create lasting value for communities.
         </p>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-16">
           {serviceData.map((service) => {
-            const Icon = service.icon;
+            const isImageBackground = typeof service.imageBg !== "string";
+
             return (
               <div
                 key={service.id}
-                className="group relative h-80 cursor-pointer overflow-hidden rounded-lg transition-all duration-500"
+                className="group relative h-[420px] cursor-pointer overflow-hidden transition-all duration-500"
               >
-                {/* Card Background with Icon */}
+                {/* Card Background */}
                 <div
                   className={cn(
                     "absolute inset-0 transition-all duration-700 transform origin-top-left group-hover:scale-[5]",
-                    service.imageBg
+                    !isImageBackground ? service.imageBg : ""
                   )}
                 >
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <Icon size={100} className="text-white/20" />
-                  </div>
+                  {isImageBackground && (
+                    <div className="absolute inset-0">
+                      <Image
+                        src={service.imageBg}
+                        alt=""
+                        fill
+                        className="object-cover opacity-50 transition-all duration-700 group-hover:blur-md"
+                        priority
+                      />
+                    </div>
+                  )}
                 </div>
 
                 {/* Content */}
-                <div className="absolute inset-0 flex flex-col justify-between p-6 z-10">
-                  <div className="space-y-2">
-                    <h3 className="text-2xl font-bold text-white">
-                      {service.title}
-                    </h3>
-                    <p className="text-gray-300">{service.subtitle}</p>
+                <div className="absolute inset-0 flex flex-col justify-between p-8 z-10">
+                  <div>
+                    {/* Title area */}
+                    <div className="space-y-3 mb-6">
+                      <h3 className="text-2xl font-bold text-white">
+                        {service.title}
+                      </h3>
+                      <p className="text-gray-300 font-semibold">
+                        {service.subtitle}
+                      </p>
+                    </div>
+
+                    {/* Description that slides in from right on hover */}
+                    <div className="transform translate-x-full opacity-0 transition-all duration-500 ease-in-out group-hover:translate-x-0 group-hover:opacity-100">
+                      <p className="text-gray-300 text-sm">
+                        {service.description}
+                      </p>
+                    </div>
                   </div>
 
-                  {/* Description that slides in from right on hover */}
-                  <div className="bg-theme-dark/80 p-4 rounded-lg transform translate-x-full opacity-0 transition-all duration-500 ease-in-out group-hover:translate-x-0 group-hover:opacity-100">
-                    <p className="text-gray-300 text-sm">
-                      {service.description}
-                    </p>
-                    <div className="mt-4 flex space-x-2 justify-end w-full">
-                      <div className="flex space-x-2 text-right">
-                        <div className="hover:underline">
-                          Expand
-                        </div>
-                        <div>&gt;</div>
-                      </div>
+                  {/* Expand button at bottom */}
+                  <div className="flex justify-end w-full mt-auto">
+                    <div className="flex space-x-2 text-right transform translate-y-full opacity-0 transition-all duration-500 ease-in-out group-hover:translate-y-0 group-hover:opacity-100">
+                      <div className="hover:underline text-white font-medium">Learn More</div>
+                      <div>&gt;</div>
                     </div>
                   </div>
                 </div>
