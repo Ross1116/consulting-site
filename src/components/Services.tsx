@@ -76,14 +76,15 @@ const Services = () => {
   return (
     <section id="services" className="py-24 bg-theme-dark">
       <div className="container mx-auto px-6 md:px-12">
-        <h2 className="text-center text-white mb-4 text-4xl font-bold">
-          Our Services
+        <h2 className="text-4xl md:text-5xl font-bold text-white mb-4 text-center">
+          OUR SERVICES
         </h2>
-        <p className="text-center text-gray-300 max-w-2xl mx-auto mb-16">
-          Comprehensive civil engineering solutions designed to build sustainable infrastructure and create lasting value for communities.
+        <p className="text-xl text-white/80 text-center max-w-4xl mx-auto">
+          Comprehensive civil engineering solutions designed to build
+          sustainable infrastructure and create lasting value for communities.
         </p>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-16 mt-16">
           {serviceData.map((service) => {
             const isImageBackground = typeof service.imageBg !== "string";
 
@@ -136,7 +137,9 @@ const Services = () => {
                   {/* Expand button at bottom */}
                   <div className="flex justify-end w-full mt-auto">
                     <div className="flex space-x-2 text-right transform translate-y-full opacity-0 transition-all duration-500 ease-in-out group-hover:translate-y-0 group-hover:opacity-100">
-                      <div className="hover:underline text-white font-medium">Learn More</div>
+                      <div className="hover:underline text-white font-medium">
+                        Learn More
+                      </div>
                       <div>&gt;</div>
                     </div>
                   </div>
