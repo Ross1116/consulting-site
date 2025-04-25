@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { Menu, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
@@ -18,9 +19,11 @@ const Navbar = () => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
   const toggleMenu = () => {
     setIsOpen(!isOpen);
   };
+
   const navLinks = [
     { href: "#about", label: "About Us" },
     { href: "#services", label: "Services" },
@@ -28,6 +31,7 @@ const Navbar = () => {
     { href: "#team", label: "Our Team" },
     { href: "#contact", label: "Contact Us" },
   ];
+
   const menuVariants = {
     hidden: {
       opacity: 0,
@@ -50,6 +54,7 @@ const Navbar = () => {
       },
     },
   };
+
   const linkVariants = {
     hidden: {
       opacity: 0,
@@ -67,6 +72,7 @@ const Navbar = () => {
       },
     },
   };
+
   return (
     <>
       <nav
@@ -77,7 +83,7 @@ const Navbar = () => {
       >
         <div className="container mx-auto flex justify-between items-center">
           <a href="#" className="text-2xl font-bold gradient-text">
-            G R Engineering
+            Design Sharp
           </a>
           <div className="hidden md:flex space-x-8">
             {navLinks.map((link) => (

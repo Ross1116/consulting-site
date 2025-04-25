@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
+
 export default function Hero() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isInView, setIsInView] = useState(false);
@@ -16,7 +17,7 @@ export default function Hero() {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
           setIsInView(true);
-          observer.disconnect(); 
+          observer.disconnect();
         }
       });
     }, options);
@@ -28,6 +29,7 @@ export default function Hero() {
       observer.disconnect();
     };
   }, []);
+
   useEffect(() => {
     if (!isInView || !canvasRef.current) return;
     const canvas = canvasRef.current;
@@ -36,7 +38,7 @@ export default function Hero() {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
     const particles: Particle[] = [];
-    const particleCount = Math.min(100, Math.floor(window.innerWidth / 20)); 
+    const particleCount = Math.min(100, Math.floor(window.innerWidth / 20));
     class Particle {
       x: number;
       y: number;
@@ -97,7 +99,8 @@ export default function Hero() {
       window.removeEventListener("resize", handleResize);
       cancelAnimationFrame(animationFrameId);
     };
-  }, [isInView]); 
+  }, [isInView]);
+
   return (
     <div className="relative h-screen w-full overflow-hidden hero-section">
       <canvas ref={canvasRef} className="absolute inset-0 h-full w-full" />

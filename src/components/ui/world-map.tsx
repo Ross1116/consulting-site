@@ -9,11 +9,13 @@ interface MapProps {
   }>;
   lineColor?: string;
 }
+
 function projectPoint(lat: number, lng: number) {
   const x = (lng + 180) * (800 / 360);
   const y = (90 - lat) * (400 / 180);
   return { x, y };
 }
+
 function createCurvedPath(
   start: { x: number; y: number },
   end: { x: number; y: number }
@@ -22,9 +24,11 @@ function createCurvedPath(
   const midY = Math.min(start.y, end.y) - 50;
   return `M ${start.x} ${start.y} Q ${midX} ${midY} ${end.x} ${end.y}`;
 }
+
 const PLACEHOLDER_SVG = `<svg width="800" height="400" xmlns="http://www.w3.org/2000/svg">
   <rect width="100%" height="100%" fill="rgba(30, 30, 30, 0.2)"/>
 </svg>`;
+
 export function WorldMap({
   dots = [],
   lineColor = "var(--chart-4)",
@@ -97,9 +101,8 @@ export function WorldMap({
     <div className="w-full aspect-[5/2] rounded-lg relative font-sans">
       {showPlaceholder && (
         <div
-          className={`absolute inset-0 z-10 transition-opacity duration-1000 ${
-            mapLoaded ? "opacity-0" : "opacity-100"
-          }`}
+          className={`absolute inset-0 z-10 transition-opacity duration-1000 ${mapLoaded ? "opacity-0" : "opacity-100"
+            }`}
         >
           <Image
             src={`data:image/svg+xml;utf8,${encodeURIComponent(
